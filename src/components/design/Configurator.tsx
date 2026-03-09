@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { formatPrice } from '@/lib/utils';
 import Button from '@/components/ui/Button';
@@ -38,6 +38,10 @@ export default function Configurator() {
   const [submitted, setSubmitted] = useState(false);
   const [useCustomSize, setUseCustomSize] = useState(false);
   const [customDimensions, setCustomDimensions] = useState({ w: 36, d: 24, h: 18 });
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentStep]);
 
   const isCustomSize = useCustomSize || !!config.size.custom;
 
