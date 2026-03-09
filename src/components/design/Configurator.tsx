@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { formatPrice } from '@/lib/utils';
 import Button from '@/components/ui/Button';
@@ -38,6 +39,8 @@ export default function Configurator() {
   const [submitted, setSubmitted] = useState(false);
   const [useCustomSize, setUseCustomSize] = useState(false);
   const [customDimensions, setCustomDimensions] = useState({ w: 36, d: 24, h: 18 });
+  const [direction, setDirection] = useState(1);
+  const prevStep = useRef(currentStep);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -84,8 +87,27 @@ export default function Configurator() {
     setSubmitted(true);
   };
 
-  const goNext = () => setCurrentStep((s) => Math.min(s + 1, 4));
-  const goBack = () => setCurrentStep((s) => Math.max(s - 1, 1));
+  const goNext = () => {
+    setDirection(1);
+    prevStep.current = currentStep;
+    setCurrentStep((s) => Math.min(s + 1, 4));
+  };
+  const goBack = () => {
+    setDirection(-1);
+    prevStep.current = currentStep;
+    setCurrentStep((s) => Math.max(s - 1, 1));
+  };
+  const goToStep = (step: number) => {
+    setDirection(step > currentStep ? 1 : -1);
+    prevStep.current = currentStep;
+    setCurrentStep(step);
+  };
+
+  const slideVariants = {
+    enter: (dir: number) => ({ x: dir > 0 ? 80 : -80, opacity: 0 }),
+    center: { x: 0, opacity: 1 },
+    exit: (dir: number) => ({ x: dir > 0 ? -80 : 80, opacity: 0 }),
+  };
 
   const renderMaterialStep = () => (
     <div>
@@ -96,9 +118,10 @@ export default function Configurator() {
           const isSelected = config.material === mat.name;
           const basePrice = materialBasePrices[mat.name as keyof typeof materialBasePrices];
           return (
-            <button
+            <motion.button
               key={mat.slug}
               type="button"
+              whileTap={{ scale: 0.97 }}
               onClick={() => setMaterial(mat.name as Material)}
               className={cn(
                 'relative rounded-xl border-2 p-5 text-left transition-all cursor-pointer',
@@ -127,7 +150,7 @@ export default function Configurator() {
                 <span className="text-sm font-medium text-surface-400">Starting at </span>
                 <span className="text-lg font-bold text-copper-400">{formatPrice(basePrice)}</span>
               </div>
-            </button>
+            </motion.button>
           );
         })}
       </div>
@@ -142,9 +165,10 @@ export default function Configurator() {
         {presetSizes.map((size) => {
           const isSelected = !useCustomSize && config.size.preset === size.key;
           return (
-            <button
+            <motion.button
               key={size.key}
               type="button"
+              whileTap={{ scale: 0.97 }}
               onClick={() => setSize(size.key as ProductSize)}
               className={cn(
                 'relative rounded-xl border-2 p-5 text-left transition-all cursor-pointer',
@@ -164,12 +188,13 @@ export default function Configurator() {
               <p className="mt-2 text-sm font-medium text-copper-400">
                 {size.basePrice === 0 ? 'Included' : `+ ${formatPrice(size.basePrice)}`}
               </p>
-            </button>
+            </motion.button>
           );
         })}
         {/* Custom size card */}
-        <button
+        <motion.button
           type="button"
+          whileTap={{ scale: 0.97 }}
           onClick={() => {
             setUseCustomSize(true);
             setConfig((prev) => ({ ...prev, size: { preset: null, custom: { ...customDimensions } } }));
@@ -190,11 +215,15 @@ export default function Configurator() {
           <h4 className="font-semibold text-surface-50">Custom</h4>
           <p className="text-sm text-surface-400">Enter your own dimensions</p>
           <p className="mt-2 text-sm font-medium text-copper-400">Quote Required</p>
-        </button>
+        </motion.button>
       </div>
 
       {useCustomSize && (
-        <div className="mt-6 rounded-xl border-2 border-primary-500/30 bg-primary-950/30 p-5">
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          className="mt-6 rounded-xl border-2 border-primary-500/30 bg-primary-950/30 p-5"
+        >
           <h4 className="font-semibold text-surface-50 mb-3">Custom Dimensions</h4>
           <div className="grid grid-cols-3 gap-4">
             {(['w', 'd', 'h'] as const).map((dim) => (
@@ -212,7 +241,7 @@ export default function Configurator() {
                     setCustomDimensions((prev) => ({ ...prev, [dim]: val }));
                     setConfig((prev) => ({ ...prev, size: { preset: null, custom: { ...customDimensions, [dim]: val } } }));
                   }}
-                  className="w-full rounded-lg border border-surface-600 bg-surface-900 px-3 py-2 text-sm text-surface-50 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
+                  className="w-full rounded-lg border border-surface-600 bg-surface-900 px-3 py-2 text-sm text-surface-50 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:shadow-[0_0_0_4px_rgba(74,133,37,0.1)] transition-all"
                 />
               </div>
             ))}
@@ -220,7 +249,7 @@ export default function Configurator() {
           <p className="mt-3 text-sm text-surface-400">
             <DimensionDisplay w={customDimensions.w} d={customDimensions.d} h={customDimensions.h} />
           </p>
-        </div>
+        </motion.div>
       )}
     </div>
   );
@@ -234,9 +263,10 @@ export default function Configurator() {
           {ventilationOptions.map((opt) => {
             const isSelected = config.features.ventilation === opt.key;
             return (
-              <button
+              <motion.button
                 key={opt.key}
                 type="button"
+                whileTap={{ scale: 0.97 }}
                 onClick={() => setFeature('ventilation', opt.key as TerrariumConfig['features']['ventilation'])}
                 className={cn(
                   'rounded-xl border-2 p-4 text-left transition-all cursor-pointer',
@@ -259,7 +289,7 @@ export default function Configurator() {
                 <p className="mt-2 text-sm font-medium text-copper-400">
                   {opt.price === 0 ? 'Included' : `+ ${formatPrice(opt.price)}`}
                 </p>
-              </button>
+              </motion.button>
             );
           })}
         </div>
@@ -272,9 +302,10 @@ export default function Configurator() {
           {doorStyleOptions.map((opt) => {
             const isSelected = config.features.doorStyle === opt.key;
             return (
-              <button
+              <motion.button
                 key={opt.key}
                 type="button"
+                whileTap={{ scale: 0.97 }}
                 onClick={() => setFeature('doorStyle', opt.key as TerrariumConfig['features']['doorStyle'])}
                 className={cn(
                   'rounded-xl border-2 p-4 text-left transition-all cursor-pointer',
@@ -297,7 +328,7 @@ export default function Configurator() {
                 <p className="mt-2 text-sm font-medium text-copper-400">
                   {opt.price === 0 ? 'Included' : `+ ${formatPrice(opt.price)}`}
                 </p>
-              </button>
+              </motion.button>
             );
           })}
         </div>
@@ -308,7 +339,11 @@ export default function Configurator() {
   const renderReviewStep = () => {
     if (submitted) {
       return (
-        <div className="rounded-2xl border-2 border-primary-700 bg-primary-950 p-8 text-center">
+        <motion.div
+          initial={{ scale: 0.95, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="rounded-2xl border-2 border-primary-700 bg-primary-950 p-8 text-center"
+        >
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary-600 text-surface-50">
             <Check className="h-8 w-8" />
           </div>
@@ -317,7 +352,7 @@ export default function Configurator() {
             Thank you for your interest. We&apos;ll review your configuration and
             get back to you within 1-2 business days with a final quote.
           </p>
-        </div>
+        </motion.div>
       );
     }
 
@@ -395,11 +430,23 @@ export default function Configurator() {
 
   return (
     <div>
-      <StepIndicator steps={STEPS} currentStep={currentStep} onStepClick={setCurrentStep} />
+      <StepIndicator steps={STEPS} currentStep={currentStep} onStepClick={goToStep} />
 
       <div className={currentStep < 4 ? 'lg:grid lg:grid-cols-3 lg:gap-8' : ''}>
         <div className={currentStep < 4 ? 'lg:col-span-2' : ''}>
-          {stepRenderers[currentStep - 1]()}
+          <AnimatePresence mode="wait" custom={direction}>
+            <motion.div
+              key={currentStep}
+              custom={direction}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+            >
+              {stepRenderers[currentStep - 1]()}
+            </motion.div>
+          </AnimatePresence>
 
           {!submitted && (
             <div className="mt-8 flex items-center justify-between">

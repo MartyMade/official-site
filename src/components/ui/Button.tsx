@@ -11,9 +11,9 @@ type ButtonAsLink = BaseProps & AnchorHTMLAttributes<HTMLAnchorElement> & { href
 type ButtonProps = ButtonAsButton | ButtonAsLink;
 
 const variants = {
-  primary: 'bg-primary-600 hover:bg-primary-500 text-surface-50',
-  secondary: 'bg-copper-400 hover:bg-copper-300 text-surface-950',
-  outline: 'border border-surface-600 hover:border-primary-500 hover:text-primary-400 text-surface-300',
+  primary: 'bg-primary-600 hover:bg-primary-500 text-surface-50 hover:shadow-md hover:shadow-primary-600/25',
+  secondary: 'bg-copper-400 hover:bg-copper-300 text-surface-950 hover:shadow-md hover:shadow-copper-400/25',
+  outline: 'border border-surface-600 hover:border-primary-500 hover:text-primary-400 hover:bg-primary-950 text-surface-300',
   ghost: 'hover:bg-surface-800 text-surface-300',
 };
 
@@ -25,7 +25,8 @@ const sizes = {
 
 export default function Button({ variant = 'primary', size = 'md', className, ...props }: ButtonProps) {
   const classes = cn(
-    'inline-flex items-center justify-center rounded-lg font-medium transition-colors duration-200 cursor-pointer',
+    'inline-flex items-center justify-center rounded-lg font-medium transition-all duration-200 cursor-pointer',
+    'hover:scale-[1.02] active:scale-[0.98]',
     variants[variant],
     sizes[size],
     className

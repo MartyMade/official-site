@@ -1,4 +1,7 @@
+'use client';
+
 import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
 
 interface StepIndicatorProps {
@@ -20,13 +23,14 @@ export default function StepIndicator({ steps, currentStep, onStepClick }: StepI
           return (
             <li key={label} className="relative flex flex-1 items-center">
               {index > 0 && (
-                <div
-                  className={cn(
-                    'absolute right-1/2 top-4 -z-10 h-0.5 w-full -translate-y-1/2',
-                    isCompleted || isCurrent ? 'bg-primary-600' : 'bg-surface-700'
-                  )}
-                  aria-hidden="true"
-                />
+                <div className="absolute right-1/2 top-4 -z-10 h-0.5 w-full -translate-y-1/2 bg-surface-700" aria-hidden="true">
+                  <motion.div
+                    className="h-full bg-primary-600 origin-left"
+                    initial={false}
+                    animate={{ scaleX: isCompleted || isCurrent ? 1 : 0 }}
+                    transition={{ duration: 0.4, ease: 'easeInOut' }}
+                  />
+                </div>
               )}
 
               <div className="flex flex-col items-center gap-2 w-full">

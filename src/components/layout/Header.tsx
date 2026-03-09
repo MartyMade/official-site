@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Sun, Moon, Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { siteConfig } from '@/data/siteConfig';
@@ -10,10 +11,20 @@ import { MobileMenu } from './MobileMenu';
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLightMode, setIsLightMode] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const html = document.documentElement;
     setIsLightMode(html.classList.contains('light'));
+  }, []);
+
+  useEffect(() => {
+    function handleScroll() {
+      setScrolled(window.scrollY > 50);
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   function toggleTheme() {
@@ -31,7 +42,12 @@ export function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-surface-950/90 backdrop-blur border-b border-surface-800">
+      <header
+        className={cn(
+          'sticky top-0 z-50 bg-surface-950/90 backdrop-blur border-b transition-shadow duration-300',
+          scrolled ? 'border-surface-700 shadow-lg shadow-black/20' : 'border-surface-800'
+        )}
+      >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             {/* Logo */}
@@ -41,18 +57,29 @@ export function Header() {
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-6">
-              {siteConfig.navigation.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="text-sm text-surface-300 hover:text-primary-400 transition-colors"
-                >
-                  {item.label}
-                </Link>
-              ))}
+              {siteConfig.navigation.map((item) => {
+                const isActive = pathname === item.href;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      'relative text-sm transition-colors py-1',
+                      isActive
+                        ? 'text-primary-400'
+                        : 'text-surface-300 hover:text-primary-400'
+                    )}
+                  >
+                    {item.label}
+                    {isActive && (
+                      <span className="absolute -bottom-0.5 left-0 right-0 h-0.5 bg-primary-400 rounded-full" />
+                    )}
+                  </Link>
+                );
+              })}
               <Link
                 href={siteConfig.ctaLink.href}
-                className="rounded-lg bg-primary-600 px-4 py-1.5 text-sm font-medium text-surface-50 hover:bg-primary-500 transition-colors"
+                className="rounded-lg bg-primary-600 px-4 py-1.5 text-sm font-medium text-surface-50 hover:bg-primary-500 transition-all hover:scale-[1.02] active:scale-[0.98]"
               >
                 {siteConfig.ctaLink.label}
               </Link>

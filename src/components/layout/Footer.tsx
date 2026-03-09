@@ -1,5 +1,8 @@
+'use client';
+
 import Link from 'next/link';
 import { siteConfig } from '@/data/siteConfig';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 
 export function Footer() {
   return (
@@ -7,50 +10,56 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           {/* Brand Info */}
-          <div>
-            <h3 className="font-heading text-xl font-bold text-primary-400">
-              {siteConfig.name}
-            </h3>
-            <p className="mt-2 text-surface-400">{siteConfig.tagline}</p>
-          </div>
+          <ScrollReveal variant="fade-left" delay={0}>
+            <div>
+              <h3 className="font-heading text-xl font-bold text-primary-400">
+                {siteConfig.name}
+              </h3>
+              <p className="mt-2 text-surface-400">{siteConfig.tagline}</p>
+            </div>
+          </ScrollReveal>
 
           {/* Quick Links */}
-          <div>
-            <h4 className="font-heading text-sm font-semibold uppercase tracking-wider text-surface-200 mb-4">
-              Quick Links
-            </h4>
-            <ul className="space-y-2">
-              {siteConfig.navigation.map((item) => (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    className="text-surface-400 hover:text-primary-400 transition-colors"
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <ScrollReveal variant="fade-left" delay={0.1}>
+            <div>
+              <h4 className="font-heading text-sm font-semibold uppercase tracking-wider text-surface-200 mb-4">
+                Quick Links
+              </h4>
+              <ul className="space-y-2">
+                {siteConfig.navigation.map((item) => (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      className="text-surface-400 hover:text-primary-400 transition-colors"
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </ScrollReveal>
 
           {/* Contact Info */}
-          <div>
-            <h4 className="font-heading text-sm font-semibold uppercase tracking-wider text-surface-200 mb-4">
-              Contact
-            </h4>
-            <ul className="space-y-2 text-surface-400">
-              <li>
-                <a href={`mailto:${siteConfig.email}`} className="hover:text-primary-400 transition-colors">
-                  {siteConfig.email}
-                </a>
-              </li>
-              <li>
-                <a href={`tel:${siteConfig.phone}`} className="hover:text-primary-400 transition-colors">
-                  {siteConfig.phone}
-                </a>
-              </li>
-            </ul>
-          </div>
+          <ScrollReveal variant="fade-left" delay={0.2}>
+            <div>
+              <h4 className="font-heading text-sm font-semibold uppercase tracking-wider text-surface-200 mb-4">
+                Contact
+              </h4>
+              <ul className="space-y-2 text-surface-400">
+                <li>
+                  <a href={`mailto:${siteConfig.email}`} className="hover:text-primary-400 transition-colors">
+                    {siteConfig.email}
+                  </a>
+                </li>
+                <li>
+                  <a href={`tel:${siteConfig.phone}`} className="hover:text-primary-400 transition-colors">
+                    {siteConfig.phone}
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </ScrollReveal>
         </div>
 
         {/* Social Links */}

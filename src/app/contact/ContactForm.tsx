@@ -47,7 +47,7 @@ export default function ContactForm() {
   }
 
   const inputClasses =
-    'w-full rounded-lg border border-surface-700 bg-surface-900 px-4 py-3 text-surface-50 placeholder:text-surface-500 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 transition-colors';
+    'w-full rounded-lg border border-surface-700 bg-surface-900 px-4 py-3 text-surface-50 placeholder:text-surface-500 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:shadow-[0_0_0_4px_rgba(74,133,37,0.1)] transition-all';
   const labelClasses = 'mb-1.5 block text-sm font-medium text-surface-300';
 
   return (

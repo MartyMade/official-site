@@ -116,3 +116,75 @@ h1, h2, h3, h4, h5, h6 {
 body {
   @apply bg-surface-950 text-surface-200;
 }
+
+/* ── Keyframes ── */
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+/* ── Utility classes ── */
+.bg-dots {
+  background-image: radial-gradient(circle, var(--surface-700) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.bg-radial-glow {
+  background: radial-gradient(ellipse at center, var(--primary-950) 0%, transparent 70%);
+}
+
+.bg-radial-glow-copper {
+  background: radial-gradient(ellipse at center, color-mix(in srgb, var(--copper-900) 30%, transparent) 0%, transparent 70%);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, var(--primary-400), var(--copper-400));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.animate-gradient-shift {
+  background-size: 400% 400%;
+  animation: gradient-shift 15s ease infinite;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* ── Card hover accent line ── */
+.card-hover {
+  @apply relative overflow-hidden transition-all duration-300;
+}
+.card-hover::after {
+  content: '';
+  @apply absolute bottom-0 left-0 right-0 h-[2px] bg-copper-400 transition-transform duration-300 origin-left;
+  transform: scaleX(0);
+}
+.card-hover:hover::after {
+  transform: scaleX(1);
+}
+.card-hover:hover {
+  @apply -translate-y-1 shadow-lg;
+}
+
+/* ── Section heading accent bar ── */
+.section-heading-accent::after {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 3px;
+  margin-top: 12px;
+  background: var(--copper-400);
+  border-radius: 2px;
+}
+.section-heading-accent.centered::after {
+  margin-left: auto;
+  margin-right: auto;
+}
